@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<memberlist>
+    <member no="1">
+        <id>iu</id>
+        <name>아이유</name>
+        <gender>여성</gender>
+        <job>가수</job>
+    </member>
+    <member no="2">
+        <id>jung</id>
+        <name>정인선</name>
+        <gender>여성</gender>
+        <job>배우</job>
+    </member>
+    <member no="3">
+        <id>inna</id>
+        <name>유인나</name>
+        <gender>여성</gender>
+        <job>배우</job>
+    </member>
+</memberlist>

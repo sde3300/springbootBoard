@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 위의 태그는 해당 파일이 xml 이라는 것을 나타내는 태그 -->
+<!-- 아래의 태그는 해당 파일이 mybatis 3.0 규격을 사용한다는 의미 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper 태그 : 실제 매핑하는 내용을 나타내는 태그 -->
+<!-- namespace : 지정한 java 파일과 연동, 전체 패키지명을 모두 입력해야 함 -->
+<mapper namespace="com.btc.board1.mapper.Board1Mapper">
+
+<!-- select : SQL문 중 SELECT 문을 실행하기 위한 태그 -->
+<!-- update : SQL문 중 UPDATE 문을 실행하기 위한 태그 -->
+<!-- insert : SQL문 중 INSERT 문을 실행하기 위한 태그 -->
+<!-- delete : SQL문 중 DELETE 문을 실행하기 위한 태그 -->
+
+	<!-- id 속성 : mapper 파일의 메서드와 연동하기 위한 속성, mapper 파일과 연동된 메서드를 구현한 것 -->
+	<!-- resultType 속성 : mapper 파일의 메서드와 연동된 반환값을 뜻함 -->
+	<select id="selectBoardList" resultType="com.btc.board1.dto.Board1Dto">
+		<![CDATA[
+			SELECT
+				board_idx,
+				title, hit_cnt,
+				DATE_FORMAT(created_date, '%Y.%m.%d %H:%i:%s') AS created_date
+			FROM
+				t_board
+			WHERE
+				deleted_yn = 'N'
+			ORDER BY
+				board_idx DESC
+		]]>
+	</select>
+	
+	<!-- Board1Mapper 인터페이스의 insertBoard 메서드를 구현 -->
+	<!-- parameterType - 자바에서의 메서드 매개변수 라고 생각하면 됨 -->
+	<insert id="insertBoard" parameterType="com.btc.board1.dto.Board1Dto" useGeneratedKeys="true" keyProperty="boardIdx">
+		<![CDATA[ 
+			INSERT INTO
+				t_board
+				(title, contents, created_date, creator_id)
+			VALUES
+				(#{title}, #{contents}, NOW(), 'tester1')
+		]]>
+	</insert>
+	
+	<!-- parameterType에 자바의 기본 타입을 사용할 경우 전체 패키지명을 입력할 필요 없음 -->
+	<select id="selectBoardDetail" parameterType="int" resultType="com.btc.board1.dto.Board1Dto">
+		<![CDATA[
+			SELECT
+				board_idx, title, contents, hit_cnt,
+				DATE_FORMAT(created_date, '%Y.%m.%d %H:%i:%s') AS created_date, creator_id
+			FROM
+				t_board
+			WHERE
+				board_idx = #{boardIdx}
+			AND
+				deleted_yn = 'N'
+		]]>
+	</select>
+	
+	<update id="updateBoard" parameterType="com.btc.board1.dto.Board1Dto">
+		<![CDATA[ 
+			UPDATE
+				t_board
+			SET
+				title=#{title},
+				contents=#{contents},
+				updated_date=NOW(),
+				updater_id='tester1'
+			WHERE
+				board_idx=#{boardIdx}
+		]]>
+	</update>
+	
+	<!-- 게시물 삭제, delete 사용 -->
+	<!--<delete id="deleteBoard" parameterType="int">
+		<![CDATA[ 
+			DELETE FROM
+				t_board
+			WHERE
+				board_idx=#{boardIdx}
+		]]>
+	</delete>-->
+	
+	<update id="deleteBoard" parameterType="int">
+		<![CDATA[
+			UPDATE
+				t_board
+			SET
+				deleted_yn = 'Y'
+			WHERE
+				board_idx=${boardIdx}
+		]]>
+	</update>
+	
+	<!-- mapper의 insertBoardFileList 메서드를 구현 -->
+	<insert id="insertBoardFileList" parameterType="com.btc.board1.dto.Board1FileDto">
+		<![CDATA[ 
+			INSERT INTO t_file
+			(board_idx, original_file_name, stored_file_path, file_size, creator_id, created_date)
+			VALUES
+
+		]]>
+		<!-- foreach : mybatis에서 반복문을 실행하는 명령어, 자바의 향상된 for문과 동일 -->
+		<!-- 객체의 전체 크기만큼 반복 실행 됨 -->
+		<!-- collection : 사용할 데이터 타입(list, array), 전달받은 매개변수의 타입 -->
+		<!-- item : 반복 실행 시 사용할 변수 명 -->
+		<!-- separator : 자동으로 끝에 붙일 기호, values 에 입력된 데이터 묶음 뒤에 붙는 , 기호 -->
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.boardIdx},
+				#{item.originalFileName},
+				#{item.storedFilePath},
+				#{item.fileSize},
+				'tester1',
+				NOW()
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 게시물 상세 확인 시 게시물에 등록된 이미지 파일 목록 불러오기 -->
+	<select id="selectBoardFileList" parameterType="int" resultType="com.btc.board1.dto.Board1FileDto">
+		<![CDATA[
+			SELECT
+				idx,
+				board_idx,
+				original_file_name,
+				FORMAT(ROUND(file_size / 1024), 0) AS file_size
+			FROM
+				t_file
+			WHERE
+				board_idx = #{boardIdx}
+			AND
+				deleted_yn = 'N'
+		]]>
+	</select>
+	
+	<!-- 다운로드할 파일의 정보를 가져옴 -->
+	<!-- parameterType = map : SQL 쿼리의 파라미터가 1개일 경우 해당 변수의 타입으로, 여러개의 경우에는 DTO 타입으로 파라미터의 타입을 지정했으나, 2개 혹은 3개 정도 일경우 DTO 타입을 새로 생성하기에는 부담이 되는 경우에 사용하는 하는 것이 map 타입임 -->
+	<!-- 여기서의 map 타입은 hashmap 타입과 같다고 생각해도 상관없음 -->
+	<select	id="selectBoardFileInfo" parameterType="map" resultType="com.btc.board1.dto.Board1FileDto">
+		<![CDATA[
+			SELECT
+				original_file_name,
+				stored_file_path,
+				file_size
+			FROM
+				t_file
+			WHERE
+				idx = #{idx}
+				AND board_idx = #{boardIdx}
+				AND deleted_yn = 'N'
+		]]>
+	</select>
+	
+	<update id="updateHitCount" parameterType="int">
+		<![CDATA[
+			UPDATE
+				t_board
+			SET
+				hit_cnt = hit_cnt + 1
+			WHERE
+				board_idx = #{boardIdx}
+		]]>
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+

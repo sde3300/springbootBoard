@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="btc.mapper.bbsMapper">
+	
+	<select id="selectBoardList" resultType="btc.dto.bbsDto">
+   		<![CDATA[
+   			SELECT 
+    				num,
+ 					title,
+    				views,
+    				likes,
+    				DATE_FORMAT(create_dt, '%y.%m.%d%h:%i:%s') AS create_dt,
+    				DATE_FORMAT(update_dt, '%y.%m.%d%h:%i:%s') AS update_dt
+			FROM
+    				bbs
+			WHERE
+			    	delete_yn = 'N'
+			ORDER BY 
+					num DESC
+		]]>
+ 	</select>
+ 	
+ 	<insert id="insertBoard" parameterType="btc.dto.bbsDto">
+		<![CDATA[
+			INSERT INTO 
+				bbs
+				(title, contents, create_dt, user_id)
+			VALUES 
+				(#{title}, #{contents}, NOW(), 'tester1')
+		]]>
+	</insert>
+	
+	<select id="selectBoardDetail" parameterType="int" resultType="btc.dto.bbsDto">
+		<![CDATA[
+			SELECT  
+				num, title, contents, views, 
+			DATE_FORMAT(create_dt, '%Y.%m.%d %H:%i:%s') AS create_dt, user_id
+			FROM 
+				bbs
+			WHERE 
+				num=#{num}
+			AND 
+				delete_yn='N'
+		]]>
+	</select>
+	
+	<update id="updateBoard" parameterType="btc.dto.bbsDto">
+		<![CDATA[
+			UPDATE 
+					bbs
+			SET 
+					title = #{title}, 
+					contents=#{contents}, 
+					update_Dt=NOW(), 
+					user_id='tester1'
+			WHERE 
+					num = #{num} 
+   		]]>
+	</update>
+	
+	<update id="deleteBoard" parameterType="int">
+		<![CDATA[
+			UPDATE
+				bbs
+			SET 
+				delete_yn = 'Y' 
+			WHERE 
+				num = ${num}
+		]]>
+	</update>
+ 	
+</mapper>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+	<link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}">
+	
+	<script src="/js/jquery-3.6.0.js" th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script src="/js/bootstrap.bundle.js" th:src="@{/js/bootstrap.bundle.js}"></script>
+	
+	<script>
+		$(document).ready(function() {
+			$("#btnCancel").on("click", function() {
+				history.back();
+			});
+		});
+	</script>
+</head>
+<body>
+	<header class="container">
+		<div class="my-5 p-5">
+			<h1 class="text-center">RESTful 방식으로 글 등록하기</h1>
+		</div>
+	</header>
+	<main class="container">
+		<div class="row">
+			<div class="col-sm-6 mx-auto">
+				<form id="frm" name="frm" action="/restBoard/write" method="POST">
+					<div class="form-group">
+						<label for="title">제목 : </label>
+						<input type="text" id="title" name="title" class="form-control" placeholder="제목을 입력하세요">
+					</div>
+					<div class="form-group">
+						<label for="creatorId">작성자 : </label>
+						<input type="text" id="creatorId" name="creatorId" class="form-control" placeholder="사용자 ID를 입력하세요">
+					</div>
+					<div class="form-group">
+						<label for="contents">글 내용 : </label>
+						<textarea rows="10" id="contents" name="contents" class="form-control"></textarea>
+					</div>
+					<div class="row mt-2">
+						<div class="col-sm d-grid">
+							<button type="submit" class="btn btn-success">등록</button>
+						</div>
+						<div class="col-sm d-grid">
+							<button type="reset" class="btn btn-secondary" id="btnCancel">취소</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+	<footer class="container-fluid my-5">
+		<p class="text-center">made by btc</p>
+	</footer>
+</body>
+</html>
+
+
+
+
+
+

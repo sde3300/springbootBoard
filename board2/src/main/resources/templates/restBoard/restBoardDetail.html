@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+
+	<link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}">
+	
+	<script src="/js/jquery-3.6.0.js" th:src="@{/js/jquery-3.6.0.js}"></script>
+	<script src="/js/bootstrap.bundle.js" th:src="@{/js/bootstrap.bundle.js}"></script>
+	
+	<script>
+		$(document).ready(function() {
+			var boardIdx = $("#boardIdx").val();
+			
+			$("#btnList").on("click", function() {
+				location.href = "/restBoard";
+			});
+			
+			$("#btnUpdate").on("click", function() {
+				$("#method").val("PUT");
+				
+				var frm = $("#frm")[0];
+				frm.action = "/restBoard/" + boardIdx;
+				frm.submit();
+			});
+			
+			$("#btnDelete").on("click", function() {
+				$("#method").val("DELETE");
+				
+				var frm = $("#frm")[0];
+				frm.action = "/restBoard/" + boardIdx;
+				frm.submit();
+			});
+		});
+	</script>
+
+</head>
+<body>
+	<header class="container">
+		<div class="my-5 p-5">
+			<h1 class="text-center">RESTful 을 사용한 상세 글 확인</h1>
+		</div>
+	</header>
+	<main class="container">
+		<div class="row">
+			<div class="col-sm-6 mx-auto">
+				<form id="frm" name="frm" method="POST">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text">글제목</span>
+						</div>
+						<input type="text" id="title" name="title" class="form-control" placeholder="제목을 입력하세요" th:value="${board.title}">
+					</div>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text">작성자 ID</span>
+						</div>
+						<input type="text" id="creatorId" name="creatorId" class="form-control" placeholder="작성자 ID를 입력하세요" th:value="${board.creatorId}">
+					</div>
+					<div class="form-group">
+						<label for="contents">글 내용 : </label>
+						<textarea name="contents" id="contants" class="form-control" th:text="${board.contents}"></textarea>
+					</div>
+					<!-- 자바스크립트 코드에서 boardIdx 를 가져오기 위해서 선언 -->
+					<!-- jquery의 ready 이벤트를 사용하여 자바스크립트가 실행되는 순서가 head 태그 > body 태그 > thymeleaf 동작 > javascript 동작 -->
+					<input type="hidden" id="boardIdx" name="boardIdx" th:value="${board.boardIdx}">
+					<!-- RESTful 방식을 사용 시 http method에 따라 서버에서 실행하는 명령이 달라짐 -->
+					<!-- GET, POST는 기본 method 명령이기 때문에 문제가 없이 정상적으로 실행이 됨 -->
+					<!-- PUT, DELETE는 input 태그에 type을 hidden 으로 사용하고, name을 _method로 설정하여 사용해야 서버로 전송 시 PUT, DELETE 명령이 전달됨 -->
+					<input type="hidden" id="method" name="_method">
+				</form>
+			</div>
+		</div>
+		<div class="row d-flex justify-content-center mt-3">
+			<div class="col-sm-6 clearfix">
+				<button type="button" id="btnList" class="btn btn-primary float-start">목록으로</button>
+				<button type="button" id="btnUpdate" class="btn btn-info ms-3 float-end">수정</button>
+				<button type="button" id="btnDelete" class="btn btn-danger float-end">삭제</button>
+			</div>
+		</div>
+	</main>
+	<footer class="container-fluid footer py-5">
+		<p class="text-center">made by btc</p>
+	</footer>
+</body>
+</html>
